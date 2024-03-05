@@ -1,0 +1,7 @@
+menu "ws2812"
+    config LIGHT_NUM
+        int "灯珠数"
+        default 5
+        help
+            设置要驱动的最大灯珠数量
+endmenu

@@ -1,0 +1,19 @@
+menu "MQTT Setting"
+    config BROKER_URL
+        string "Broker URL"
+        default "mqtt://192.168.3.140:5812"
+        help
+            URL of the broker to connect to
+    
+    config USERNAME
+        string "Username"
+        default "admin"
+        help
+            user name
+            
+    config PASSWORD
+        string "Password"
+        default "public"
+        help
+            password
+endmenu
