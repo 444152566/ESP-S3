@@ -24,9 +24,9 @@ void lightSet(uint8_t pColor[][3], uint16_t lightLen)
     {
         for (uint16_t j = 0; j < 8; j++)
         {
-            lightBuff[i][j] = code[(pColor[i][0]>>(8-j)) & 0x01];     // 红色
-            lightBuff[i][j+8] = code[(pColor[i][2]>>(8-j)) & 0x01];   // 蓝色
-            lightBuff[i][j+16] = code[(pColor[i][1]>>(8-j)) & 0x01];  // 绿色
+            lightBuff[i][j] = code[(pColor[i][0]>>(7-j)) & 0x01];     // 红色
+            lightBuff[i][j+8] = code[(pColor[i][2]>>(7-j)) & 0x01];   // 蓝色
+            lightBuff[i][j+16] = code[(pColor[i][1]>>(7-j)) & 0x01];  // 绿色
         }
     }
     lightTrans((uint8_t*)lightBuff, 24*len);
@@ -44,9 +44,9 @@ void lightSetByList(List* colorList)
         uint8_t* color = curColor->data.lightColorArry.color;
         for (uint16_t j = 0; j < 8; j++)
         {
-            lightBuff[i][j] = code[(color[0]>>(8-j)) & 0x01];     // 红色
-            lightBuff[i][j+8] = code[(color[2]>>(8-j)) & 0x01];   // 蓝色
-            lightBuff[i][j+16] = code[(color[1]>>(8-j)) & 0x01];  // 绿色
+            lightBuff[i][j] = code[(color[0]>>(7-j)) & 0x01];     // 红色
+            lightBuff[i][j+8] = code[(color[2]>>(7-j)) & 0x01];   // 蓝色
+            lightBuff[i][j+16] = code[(color[1]>>(7-j)) & 0x01];  // 绿色
         }
     }
     lightTrans((uint8_t*)lightBuff, 24*len);
