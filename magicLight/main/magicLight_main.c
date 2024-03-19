@@ -142,9 +142,6 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
     }
 }
 
-#define CONFIG_WIFI_SSID        "o_o"           //"o_o"    RabbitHouse
-#define CONFIG_WIFI_PASSWORD    "12345679"
-
 #define CONNECTED_BIT       BIT0
 #define CONNECT_FAIL_BIT    BIT1
 #define AUTH_FAIL_BIT       BIT2
@@ -352,41 +349,17 @@ static void mqtt_app_start(void)
 {
     esp_mqtt_client_config_t mqtt_cfg = {
         .broker.address = {
-            .uri = CONFIG_BROKER_URL, //"mqtt://192.168.3.140:5812",         // Madoka:849379776zxc?
+            .uri = CONFIG_BROKER_URL, //"mqtt://192.168.3.140:5812",
             // .hostname = "192.168.3.140",
             // .port = 5812,
             // .transport = MQTT_TRANSPORT_OVER_TCP,
         },
         .credentials = {
-            .username = CONFIG_USERNAME,    //"Madoka",
-            .authentication.password = CONFIG_PASSWORD,    //"849379776zxc?",
+            .username = CONFIG_USERNAME, 
+            .authentication.password = CONFIG_PASSWORD,
             // .client_id = "mqttx_9c2dfd00",
         },
     };
-#if CONFIG_BROKER_URL_FROM_STDIN
-    char line[128];
-
-    if (strcmp(mqtt_cfg.broker.address.uri, "FROM_STDIN") == 0) {
-        int count = 0;
-        printf("Please enter url of mqtt broker\n");
-        while (count < 128) {
-            int c = fgetc(stdin);
-            if (c == '\n') {
-                line[count] = '\0';
-                break;
-            } else if (c > 0 && c < 127) {
-                line[count] = c;
-                ++count;
-            }
-            vTaskDelay(10 / portTICK_PERIOD_MS);
-        }
-        mqtt_cfg.broker.address.uri = line;
-        printf("Broker url: %s\n", line);
-    } else {
-        ESP_LOGE(TAG, "Configuration mismatch: wrong broker url");
-        abort();
-    }
-#endif /* CONFIG_BROKER_URL_FROM_STDIN */
 
     esp_mqtt_client_handle_t client = esp_mqtt_client_init(&mqtt_cfg);
     /* The last argument may be used to pass data to the event handler, in this example mqtt_event_handler */

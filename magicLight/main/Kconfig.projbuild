@@ -16,4 +16,16 @@ menu "MQTT Setting"
         default "public"
         help
             password
+
+    config WIFI_SSID
+        string "WIFI SSID"
+        default "ssid"
+        help
+            WIFI SSID
+
+    config WIFI_PASSWORD
+        string "WIFI PASSWORD"
+        default "password"
+        help
+            WIFI PASSWORD
 endmenu
