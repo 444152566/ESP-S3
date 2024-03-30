@@ -13,9 +13,9 @@
 
 #define LIGHT_NUM      CONFIG_LIGHT_NUM
 
-#define INDEX_R     2
+#define INDEX_R     1
 #define INDEX_G     0
-#define INDEX_B     1
+#define INDEX_B     2
 
 void lightSet(uint8_t pColor[][3], uint16_t lightLen);
 void lightSetByList(List* colorList);

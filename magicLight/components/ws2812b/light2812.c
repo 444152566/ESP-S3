@@ -10,8 +10,8 @@
 #define PIN_NUM_CS      22
 
 static spi_device_handle_t spi;
-static const uint8_t code[2]={0xE0,0xF8};
-static uint8_t lightBuff[LIGHT_NUM + 20][24];      // 颜色解码后的数据缓存
+static const uint8_t code[2]={0x8,0xE};
+static uint8_t lightBuff[LIGHT_NUM + 20][12];      // 颜色解码后的数据缓存
 
 static int lightTrans(uint8_t* pColor, uint16_t len);
 
@@ -22,14 +22,18 @@ void lightSet(uint8_t pColor[][3], uint16_t lightLen)
     uint16_t len = lightLen > LIGHT_NUM ? LIGHT_NUM:lightLen;     // LIGHT_NUM
     for (uint16_t i = 0; i < len; i++)
     {
-        for (uint16_t j = 0; j < 8; j++)
+        for (uint16_t j = 0; j < 4; j++)
         {
-            lightBuff[i][j] = code[(pColor[i][0]>>(7-j)) & 0x01];     // 红色
-            lightBuff[i][j+8] = code[(pColor[i][2]>>(7-j)) & 0x01];   // 蓝色
-            lightBuff[i][j+16] = code[(pColor[i][1]>>(7-j)) & 0x01];  // 绿色
+            // lightBuff[i][j] = code[(pColor[i][0]>>(7-j)) & 0x01];     // 红色
+            // lightBuff[i][j+8] = code[(pColor[i][2]>>(7-j)) & 0x01];   // 蓝色
+            // lightBuff[i][j+16] = code[(pColor[i][1]>>(7-j)) & 0x01];  // 绿色
+
+            lightBuff[i][j]   = ((code[(pColor[i][INDEX_R]>>(7-j*2)) & 0x01]) << 4) | (code[(pColor[i][INDEX_R]>>(7-j*2-1)) & 0x01]);    // 红色
+            lightBuff[i][j+4] = ((code[(pColor[i][INDEX_G]>>(7-j*2)) & 0x01]) << 4) | (code[(pColor[i][INDEX_G]>>(7-j*2-1)) & 0x01]);    // 蓝色
+            lightBuff[i][j+8] = ((code[(pColor[i][INDEX_B]>>(7-j*2)) & 0x01]) << 4) | (code[(pColor[i][INDEX_B]>>(7-j*2-1)) & 0x01]);    // 绿色
         }
     }
-    lightTrans((uint8_t*)lightBuff, 24*len);
+    lightTrans((uint8_t*)lightBuff, 12*len);
     // printf("light set 2\n");
 }
 
@@ -42,14 +46,18 @@ void lightSetByList(List* colorList)
     for (uint16_t i = 0; i < len; i++, curColor=curColor->next)
     {
         uint8_t* color = curColor->data.lightColorArry.color;
-        for (uint16_t j = 0; j < 8; j++)
+        for (uint16_t j = 0; j < 4; j++)
         {
-            lightBuff[i][j] = code[(color[0]>>(7-j)) & 0x01];     // 红色
-            lightBuff[i][j+8] = code[(color[2]>>(7-j)) & 0x01];   // 蓝色
-            lightBuff[i][j+16] = code[(color[1]>>(7-j)) & 0x01];  // 绿色
+            // lightBuff[i][j] = code[(color[0]>>(7-j)) & 0x01];     // 红色
+            // lightBuff[i][j+8] = code[(color[2]>>(7-j)) & 0x01];   // 蓝色
+            // lightBuff[i][j+16] = code[(color[1]>>(7-j)) & 0x01];  // 绿色
+
+            lightBuff[i][j]   = ((code[(color[INDEX_R]>>(7-j*2)) & 0x01]) << 4) | (code[(color[INDEX_R]>>(7-j*2-1)) & 0x01]);    // 红色
+            lightBuff[i][j+4] = ((code[(color[INDEX_G]>>(7-j*2)) & 0x01]) << 4) | (code[(color[INDEX_G]>>(7-j*2-1)) & 0x01]);    // 蓝色
+            lightBuff[i][j+8] = ((code[(color[INDEX_B]>>(7-j*2)) & 0x01]) << 4) | (code[(color[INDEX_B]>>(7-j*2-1)) & 0x01]);    // 绿色
         }
     }
-    lightTrans((uint8_t*)lightBuff, 24*len);
+    lightTrans((uint8_t*)lightBuff, 12*len);
 }
 
 int lightInit(void)
@@ -64,7 +72,7 @@ int lightInit(void)
         .max_transfer_sz = LIGHT_NUM * 3 * 8,
     };
     spi_device_interface_config_t devcfg={
-        .clock_speed_hz=8*1000*1000,           //Clock out at 8 MHz
+        .clock_speed_hz=4*1000*1000,           //Clock out at 8 MHz
         .mode=0,                                //SPI mode 0
         .spics_io_num=-1,      // PIN_NUM_CS,               //CS pin
         .queue_size=7,                          //We want to be able to queue 7 transactions at a time
@@ -78,7 +86,7 @@ int lightInit(void)
     ESP_ERROR_CHECK(ret);
     for (uint16_t i = 0; i < LIGHT_NUM; i++)
     {
-        for (uint16_t j = 0; j < 24; j++)
+        for (uint16_t j = 0; j < 12; j++)
         {
             lightBuff[i][j] = code[0];
         }
